@@ -1,0 +1,1276 @@
+<div class="row">
+  <div class="mainPadding">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-sm-6">
+            <h6 class="panel-title">Drug-Drug Interaction Result Summary</h6>
+          </div>
+          <div class="col-sm-6">
+            <a data-toggle="modal" data-target="#info" class="infomdl">
+              <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="modal-body row">
+          <div class="col-md-12">
+            <div class="card card-outline-secondary">
+              <div class="panel panel-primary">
+                <div class="panel-body ">
+                  <form class="form-inline">
+                    <label class="col-form-label mr-sm-3" for="program">Program:</label>
+                    <select class="form-control mr-sm-3" id="program" [(ngModel)]='selectedProgram' name='program'
+                      (change)="onSelect(selectedProgram)">
+                      <option value="-- Select Program --">-- Select Program --</option>
+                      <option *ngFor="let program of allProgram | orderBy : 'Title'" [ngValue]="program.Title">{{
+                      program.Title }}</option>
+                    </select>
+                    <label class="mr-sm-3 col-form-label" for="compound">Compound:</label>
+                    <select class="form-control mr-sm-3" id="compound" [(ngModel)]='selectedCompound' name='compound'
+                      (change)='onprogramselectionChanged(selectedCompound)'>
+                      <option value="-- Select Compound --">-- Select Compound --</option>
+                      <option *ngFor="let compound of cacadedCompound | orderBy : 'Title'" [ngValue]="compound">{{
+                      compound.Title }}</option>
+                    </select>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-primary">
+              <div class="panel-body">
+                <div class="row" *ngIf='loading != null'>
+                  <img style="margin: auto!important" class="img-responsive" [src]="loading" />
+                </div>
+                <form class="form-horizontal setFormsize" role="form">
+                  <div class="alert alert-danger" *ngIf='showDose == false'>
+                    <strong>Alert!</strong> There is no ADME Data Related with the selected Compound. Please ADME Data.
+                  </div>
+                  <div class="alert alert-danger" *ngIf='alertfromProgram != null'>
+                    <strong>Alert!</strong> Compound isn't selected.
+                    <br /> Please select a compound or add one if there is no compound associated with the program.
+                  </div>
+                  <table class="table table-bordered" *ngIf='showDose == true'>
+                    <colgroup>
+                      <col class="col-md-2">
+                      <col class="col-md-2">
+                      <col class="col-md-3">
+                      <col class="col-md-3">
+                      <col class="col-md-3">
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th colspan="5" class="thbackground">ADME Details</th>
+                      </tr>
+                      <tr class="titleBckground">
+                        <th>Study No.</th>
+                        <th>Dose (uM)</th>
+                        <th>Imax [Cmax] (uM)</th>
+                        <th>Plasma PB (Fraction Unbound)</th>
+                        <th>Microsomal PB (Fraction Unbound)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <select class="form-control" id="dode" [(ngModel)]='selecteddose' name='dose'
+                            (change)='ondoseChnage(selecteddose)'>
+                            <option value="-- Select Study --">-- Select Dose --</option>
+                            <option *ngFor="let dose of admeDATA" [ngValue]="dose">
+                              {{dose.StableDose == true? (dose.StudyNumber + ' *') : dose.StudyNumber}}
+                            </option>
+                          </select>
+                        </td>
+                        <td>{{dose}}</td>
+                        <td>{{imaxCmax}}</td>
+                        <td>{{plasmaPBFree}}</td>
+                        <td *ngIf='Microsomaltested == true'>
+                          {{microsomalPBFree}}
+                        </td>
+                        <td *ngIf='Microsomaltested == false'>
+                          Not Tested
+                        </td>
+                      </tr>
+                      <!-- <tr>
+                        <td colspan="2">
+                          Modified Date :- {{Modified | date }}
+                        </td>
+                        <td colspan="3">
+                          Modified :- {{ModifiedBy.Title}}
+                        </td>
+                      </tr>-->
+                      <tr>
+                        <td>
+                          Comment
+                        </td>
+                        <td colspan="4">
+                          {{ADMEComment}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          URL
+                        </td>
+                        <td colspan="4">
+                          <a *ngIf="ADMECommentLink !== null" target="_blank" href="{{ADMECommentLink}}">
+                            Click Here
+                            <!-- {{ADMECommentDescription}} -->
+                          </a>
+                        </td>
+                      </tr>
+
+
+
+
+
+                      <tr>
+                        <td colspan="5">
+                          <div class="alert alert-info">
+                            <strong>Modified Date:</strong> {{Modified | date }} <br>
+                            <strong>Modified:</strong> {{ModifiedBy.Title}}
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <ul class="nav nav-tabs" *ngIf='showDose == true'>
+                    <li class="nav active">
+                      <a class="setNavPadding" href="#CYP450" data-toggle="tab">CYP450 Incyte Drug as Perpetrator</a>
+                    </li>
+                    <li class="nav">
+                      <a class="setNavPadding" href="#Transporter" data-toggle="tab">Transporter Incyte Drug as
+                        Perpetrator
+                        and Victim</a>
+                    </li>
+                    <li class="nav">
+                      <a class="setNavPadding" href="#CYP450Victim" data-toggle="tab">CYP450 Data Input: Incyte drug as
+                        Victim</a>
+                    </li>
+                  </ul>
+                  <div class="tab-content" *ngIf='showDose == true'>
+                    <div class="tab-pane fade in active" id="CYP450">
+                      <div class="alert alert-danger" *ngIf='showCYP450Data == false'>
+                        <strong>Alert!</strong> There is no data related to CYP450 Incyte Drug as Perpetrator.
+                      </div>
+                      <div class="row-fluid" *ngIf='showCYP450Data == true'>
+                        <div class="alert alert-info">
+                          <strong>Modified Date:</strong> {{CYP450DataModified | date }} <br>
+                          <strong>Modified:</strong> {{CYP450DataEditor.Title}}
+                        </div>
+                        <div class="row">&nbsp;</div>
+                      </div>
+                      <table class="table table-bordered margin-bottom" *ngIf='showCYP450Data == true'>
+                        <colgroup>
+                          <col class="col-md-2">
+                          <col class="col-md-1">
+                          <col class="col-md-3">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th colspan="6" class="thbackground">CYP450 Incyte Drug as Perpetrator</th>
+                          </tr>
+                          <tr class="titleBckground">
+                            <th>Assay</th>
+                            <th>Enzyme</th>
+                            <th>Results</th>
+                            <th>R1 total (2012 FDA Guidance)</th>
+                            <th>R1 unbound (2017 FDA Guidance)</th>
+                            <th>R1, gut</th>
+                          </tr>
+                          <!-- <tr>
+                            <td colspan="6">
+                              <div class="alert alert-info">
+                                <strong>Modified Date:</strong> {{CYP450DataModified | date }} <br>
+                                <strong>Modified:</strong> {{CYP450DataEditor.Title}}
+                              </div>
+                            </td>
+                          </tr> -->
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Reversible Inhibition</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">1A2</li>
+                                <li class="list-group-item lipaddingheight">2B6</li>
+                                <li class="list-group-item lipaddingheight">2C8</li>
+                                <li class="list-group-item lipaddingheight">2C9</li>
+                                <li class="list-group-item lipaddingheight">2C19</li>
+                                <li class="list-group-item lipaddingheight">2D6</li>
+                                <li class="list-group-item lipaddingheight">3A4(midazolam)</li>
+                                <li class="list-group-item lipaddingheight">3A4(testosterone)</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-6">
+                                  <col class="col-md-2">
+                                </colgroup>
+                                <tr>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{RI1A2Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2B6Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2C8Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2C9Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2C19Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2D6Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI3A4MidInput}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI3A4TstInput}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{RI1A2Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2B6Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2C8Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2C9Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2C19Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI2D6Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI3A4MidValue}}</li>
+                                      <li class="list-group-item lipaddingheight">{{RI3A4TstValue}}</li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI1A2 >= 1.1, 'setliBGGreen' : R1TotalRI1A2 < 1.1}">
+                                  {{R1TotalRI1A2}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI2B6 >= 1.1, 'setliBGGreen' : R1TotalRI2B6 < 1.1}">
+                                  {{R1TotalRI2B6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI2C8 >= 1.1, 'setliBGGreen' : R1TotalRI2C8 < 1.1}">
+                                  {{R1TotalRI2C8}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI2C9 >= 1.1, 'setliBGGreen' : R1TotalRI2C9 < 1.1}">
+                                  {{R1TotalRI2C9}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI2C19 >= 1.1, 'setliBGGreen' : R1TotalRI2C19 < 1.1}">
+                                  {{R1TotalRI2C19}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI2D6 >= 1.1, 'setliBGGreen' : R1TotalRI2D6 < 1.1}">
+                                  {{R1TotalRI2D6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI3A4Mid >= 1.1, 'setliBGGreen' : R1TotalRI3A4Mid < 1.1}">
+                                  {{R1TotalRI3A4Mid}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1TotalRI3A4 >= 1.1, 'setliBGGreen' : R1TotalRI3A4 < 1.1}">
+                                  {{R1TotalRI3A4}}</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI1A2 >= 1.02, 'setliBGGreen' : R1UnboundRI1A2 < 1.02}">
+                                  {{R1UnboundRI1A2}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI2B6 >= 1.02, 'setliBGGreen' : R1UnboundRI2B6 < 1.02}">
+                                  {{R1UnboundRI2B6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI2C8 >= 1.02, 'setliBGGreen' : R1UnboundRI2C8 < 1.02}">
+                                  {{R1UnboundRI2C8}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI2C9 >= 1.02, 'setliBGGreen' : R1UnboundRI2C9 < 1.02}">
+                                  {{R1UnboundRI2C9}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI2C19 >= 1.02, 'setliBGGreen' : R1UnboundRI2C19 < 1.02}">
+                                  {{R1UnboundRI2C19}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI2D6 >= 1.02, 'setliBGGreen' : R1UnboundRI2D6 < 1.02}">
+                                  {{R1UnboundRI2D6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI3A4Mid >= 1.02, 'setliBGGreen' : R1UnboundRI3A4Mid < 1.02}">
+                                  {{R1UnboundRI3A4Mid}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1UnboundRI3A4 >= 1.02, 'setliBGGreen' : R1UnboundRI3A4 < 1.02}">
+                                  {{R1UnboundRI3A4}}</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI1A2 >= 11, 'setliBGGreen' : R1GutRI1A2 < 11}">
+                                  {{R1GutRI1A2}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI2B6 >= 11, 'setliBGGreen' : R1GutRI2B6 < 11}">
+                                  {{R1GutRI2B6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI2C8 >= 11, 'setliBGGreen' : R1GutRI2C8 < 11}">
+                                  {{R1GutRI2C8}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI2C9 >= 11, 'setliBGGreen' : R1GutRI2C9 < 11}">
+                                  {{R1GutRI2C9}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI2C19 >= 11, 'setliBGGreen' : R1GutRI2C19 < 11}">
+                                  {{R1GutRI2C19}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI2D6 >= 11, 'setliBGGreen' : R1GutRI2D6 < 11}">
+                                  {{R1GutRI2D6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI3A4Mid >= 11, 'setliBGGreen' : R1GutRI3A4Mid < 11}">
+                                  {{R1GutRI3A4Mid}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R1GutRI3A4 >= 11, 'setliBGGreen' : R1GutRI3A4 < 11}">
+                                  {{R1GutRI3A4}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Comment</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{ RIComment }}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Url</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">
+                                  <a href="{{FirstURL}}" target="_blank" *ngIf="FirstURL !== null">
+                                    Click Here
+                                  </a>
+                                </li>
+                              </ul>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-bordered margin-bottom" *ngIf='showCYP450Data == true'>
+                        <colgroup>
+                          <col class="col-md-1">
+                          <col class="col-md-1">
+                          <col class="col-md-3">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                        </colgroup>
+                        <thead>
+                          <tr class="titleBckground">
+                            <th>Assay</th>
+                            <th>Enzyme</th>
+                            <th>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                </colgroup>
+                                <tr>
+                                  <td>Indication for TDI</td>
+                                  <td>Kinact</td>
+                                  <td>KI</td>
+                                  <td>Kdeg</td>
+                                </tr>
+                              </table>
+                            </th>
+                            <th>R2 total (2012 FDA Guidance)</th>
+                            <th>R2 Total Concentration (2013 EMA Guidance)</th>
+                            <th>R2 unbound (2017 FDA Guidance)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Time-Dependent Inhibition</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight" *ngIf="TDI2C9CKS !== 'None'">2C9</li>
+                                <li class="list-group-item lipaddingheight" *ngIf="TDI2C19CKS !== 'None'">2C19</li>
+                                <li class="list-group-item lipaddingheight" *ngIf="TDI2D6CKS !== 'None'">2D6</li>
+                                <li class="list-group-item lipaddingheight" *ngIf="TDI3A4MidCKS !== 'None'">
+                                  3A4(midazolam)</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                </colgroup>
+                                <tr>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C9CKS !== 'None'">
+                                        {{TDI2C9CKS}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C19CKS !== 'None'">
+                                        {{TDI2C19CKS}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2D6CKS !== 'None'">
+                                        {{TDI2D6CKS}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI3A4MidCKS !== 'None'">
+                                        {{TDI3A4MidCKS}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C9CKS !== 'None'">
+                                        {{TDI2C9Kinact}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C19CKS !== 'None'">
+                                        {{TDI2C19Kinact}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2D6CKS !== 'None'">
+                                        {{TDI2D6Kinact}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI3A4MidCKS !== 'None'">
+                                        {{TDI3A4MidKinact}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C9CKS !== 'None'">
+                                        {{TDI2C9KI}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C19CKS !== 'None'">
+                                        {{TDI2C19KI}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2D6CKS !== 'None'">
+                                        {{TDI2D6KI}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI3A4MidCKS !== 'None'">
+                                        {{TDI3A4MidKI}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C9CKS !== 'None'">
+                                        {{TDI2C9Kdeg}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2C19CKS !== 'None'">
+                                        {{TDI2C19Kdeg}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI2D6CKS !== 'None'">
+                                        {{TDI2D6Kdeg}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="TDI3A4MidCKS !== 'None'">
+                                        {{TDI3A4MidKdeg}}</li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2TotalTDI2C9 >= 1.1, 'setliBGGreen' : R2TotalTDI2C9 < 1.1}"
+                                  *ngIf="TDI2C9CKS !== 'None'">
+                                  {{R2TotalTDI2C9}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2TotalTDI2C19 >= 1.1, 'setliBGGreen' : R2TotalTDI2C19 < 1.1}"
+                                  *ngIf="TDI2C19CKS !== 'None'">
+                                  {{R2TotalTDI2C19}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2TotalTDI2D6 >= 1.1, 'setliBGGreen' : R2TotalTDI2D6 < 1.1}"
+                                  *ngIf="TDI2D6CKS !== 'None'">
+                                  {{R2TotalTDI2D6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2TotalTDI3A4Mid >= 1.1, 'setliBGGreen' : R2TotalTDI3A4Mid < 1.1}"
+                                  *ngIf="TDI3A4MidCKS !== 'None'">
+                                  {{R2TotalTDI3A4Mid}}</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight" [ngClass]="{'setliBGRed' : R22013TotalTDI2C9 >= 1.1, 'setliBGGreen' :
+                                  R22013TotalTDI2C9 <
+                                    1.1}" *ngIf="TDI2C9CKS !== 'None'">
+                                  {{R22013TotalTDI2C9}}
+                                </li>
+                                <li class="list-group-item lipaddingheight" [ngClass]="{'setliBGRed' : R22013TotalTDI2C19 >= 1.1, 'setliBGGreen' :
+                                   R22013TotalTDI2C19
+                                   < 1.1}" *ngIf="TDI2C19CKS !== 'None'">
+                                  {{R22013TotalTDI2C19}}
+                                </li>
+                                <li class="list-group-item lipaddingheight" [ngClass]="{'setliBGRed' : R22013TotalTDI2D6 >= 1.1, 'setliBGGreen' :
+                                  R22013TotalTDI2D6 <
+                                    1.1}" *ngIf="TDI2D6CKS !== 'None'">
+                                  {{R22013TotalTDI2D6}}
+                                </li>
+                                <li class="list-group-item lipaddingheight" [ngClass]="{'setliBGRed' : R22013TotalTDI3A4Mid >= 1.1, 'setliBGGreen' :
+                                  R22013TotalTDI3A4Mid < 1.1}" *ngIf="TDI3A4MidCKS !== 'None'">
+                                  {{R22013TotalTDI3A4Mid}}
+                                </li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2UnboundTDI2C9 >= 1.25, 'setliBGGreen' : R2UnboundTDI2C9 < 1.25}"
+                                  *ngIf="TDI2C9CKS !== 'None'">
+                                  {{R2UnboundTDI2C9}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2UnboundTDI2C19 >= 1.25, 'setliBGGreen' : R2UnboundTDI2C19 < 1.25}"
+                                  *ngIf="TDI2C19CKS !== 'None'">
+                                  {{R2UnboundTDI2C19}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2UnboundTDI2D6 >= 1.25, 'setliBGGreen' : R2UnboundTDI2D6 < 1.25}"
+                                  *ngIf="TDI2D6CKS !== 'None'">
+                                  {{R2UnboundTDI2D6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R2UnboundTDI3A4Mid >= 1.25, 'setliBGGreen' : R2UnboundTDI3A4Mid < 1.25}"
+                                  *ngIf="TDI3A4MidCKS !== 'None'">
+                                  {{R2UnboundTDI3A4Mid}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Comment</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{ TDIComment }}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Url</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">
+                                  <a href="{{SecoundURL}}" target="_blank" *ngIf="SecoundURL !== null">
+                                    Click Here
+                                  </a>
+                                </li>
+                              </ul>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-bordered" *ngIf='showCYP450Data == true'>
+                        <colgroup>
+                          <col class="col-md-2">
+                          <col class="col-md-1">
+                          <col class="col-md-4">
+                          <col class="col-md-2">
+                          <col class="col-md-3">
+                        </colgroup>
+                        <thead *ngIf="CY450Inductiontested === true">
+                          <tr class="titleBckground">
+                            <th>Assay</th>
+                            <th>Enzyme</th>
+                            <th>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                </colgroup>
+                                <tr>
+                                  <td>Indication for Induction</td>
+                                  <td>Emax</td>
+                                  <td>EC50</td>
+                                </tr>
+                              </table>
+                            </th>
+                            <th>R3 total (2012 FDA Guidance)</th>
+                            <th>R3 unbound (2017 FDA Guidance)</th>
+                          </tr>
+                        </thead>
+                        <tbody *ngIf="CY450Inductiontested === true">
+                          <tr>
+                            <td>Induction</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight" *ngIf="Induction1A2CFI !== 'No'">1A2</li>
+                                <li class="list-group-item lipaddingheight" *ngIf="Induction2B6CFI !== 'No'">2B6</li>
+                                <li class="list-group-item lipaddingheight" *ngIf="Induction3ACFI !== 'No'">3A</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                  <col class="col-md-1">
+                                </colgroup>
+                                <tr>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction1A2CFI !== 'No'">
+                                        {{Induction1A2CFI}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction2B6CFI !== 'No'">
+                                        {{Induction2B6CFI}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction3ACFI !== 'No'">
+                                        {{Induction3ACFI}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction1A2CFI !== 'No'">
+                                        {{Induction1A2Emax}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction2B6CFI !== 'No'">
+                                        {{Induction2B6Emax}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction3ACFI !== 'No'">
+                                        {{Induction3AEmax}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction1A2CFI !== 'No'">
+                                        {{Induction1A2EC50}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction2B6CFI !== 'No'">
+                                        {{Induction2B6EC50}}</li>
+                                      <li class="list-group-item lipaddingheight" *ngIf="Induction3ACFI !== 'No'">
+                                        {{Induction3AEC50}}</li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R3TotalInduction1A2 <= 0.9, 'setliBGGreen' : R3TotalInduction1A2 > 0.9}"
+                                  *ngIf="Induction1A2CFI !== 'No'">
+                                  {{R3TotalInduction1A2}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R3TotalInduction2B6 <= 0.9, 'setliBGGreen' : R3TotalInduction2B6 > 0.9}"
+                                  *ngIf="Induction2B6CFI !== 'No'">
+                                  {{R3TotalInduction2B6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R3TotalInduction3A <= 0.9, 'setliBGGreen' : R3TotalInduction3A > 0.9}"
+                                  *ngIf="Induction3ACFI !== 'No'">
+                                  {{R3TotalInduction3A}}</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R3UnboundInduction1A29 <= 0.8, 'setliBGGreen' : R3UnboundInduction1A29 > 0.8}"
+                                  *ngIf="Induction1A2CFI !== 'No'">
+                                  {{R3UnboundInduction1A29}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R3UnboundInduction2B6 <= 0.8, 'setliBGGreen' : R3UnboundInduction2B6 > 0.8}"
+                                  *ngIf="Induction2B6CFI !== 'No'">
+                                  {{R3UnboundInduction2B6}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : R3UnboundInduction3A <= 0.8, 'setliBGGreen' : R3UnboundInduction3A > 0.8}"
+                                  *ngIf="Induction3ACFI !== 'No'">
+                                  {{R3UnboundInduction3A}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Comment</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{ Note }}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Url</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">
+                                  <a href="{{ThirdURL}}" target="_blank" *ngIf="ThirdURL !== null">
+                                    Click Here
+                                  </a>
+                                </li>
+                              </ul>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="tab-pane fade" id="Transporter">
+                      <div class="alert alert-danger" *ngIf='showTransporterData == false'>
+                        <strong>Alert!</strong>There is no data related to Transporter Incyte Drug as Perpetrator.
+                      </div>
+                      <div class="row-fluid" *ngIf='showTransporterData == true'>
+                        <div class="alert alert-info">
+                          <strong>Modified Date:</strong> {{TransporterDataModified | date }} <br>
+                          <strong>Modified:</strong> {{TransporterDataEditor.Title}}
+                        </div>
+                        <div class="row">&nbsp;</div>
+                      </div>
+                      <table class="table table-bordered" *ngIf='showTransporterData == true'>
+                        <colgroup>
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-3">
+                          <col class="col-md-3">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th colspan="5" class="thbackgroundTransporter">Transporter Incyte Drug as Perpetrator</th>
+                          </tr>
+                          <tr class="titleBckgroundTransporter">
+                            <th>Mechanism</th>
+                            <th>Tissue</th>
+                            <th>Transporter</th>
+                            <th>Results</th>
+                            <th>R-Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Uptake</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">Liver</li>
+                                <li class="list-group-item lipaddingheight">Liver</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">OATP1B1</li>
+                                <li class="list-group-item lipaddingheight">OATP1B3</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-6">
+                                  <col class="col-md-2">
+                                </colgroup>
+                                <tr>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{UptakeOATP1B1Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{UptakeOATP1B3Input}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{UptakeOATP1B1Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{UptakeOATP1B3Value}}</li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : UptakeOATP1B1RValue >= 1.1, 'setliBGGreen' : UptakeOATP1B1RValue < 1.04, 'setliBGOrange' : ((UptakeOATP1B1RValue >= 1.04) && (UptakeOATP1B1RValue < 1.1))}">
+                                  {{UptakeOATP1B1RValue}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : UptakeOATP1B3RValue >= 1.1, 'setliBGGreen' : UptakeOATP1B3RValue < 1.04, 'setliBGOrange' : ((UptakeOATP1B3RValue >= 1.04) && (UptakeOATP1B3RValue < 1.1))}">
+                                  {{UptakeOATP1B3RValue}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <!-- <tr>
+                            <td colspan="2">
+                              Modified Date :- {{TransporterDataModified | date }}
+                            </td>
+                            <td colspan="3">
+                              Modified :- {{TransporterDataEditor.Title}}
+                            </td>
+                          </tr> -->
+                          <tr class="titleBckgroundTransporter">
+                            <th>Mechanism</th>
+                            <th>Tissue</th>
+                            <th>Transporter</th>
+                            <th>Results</th>
+                            <th>Cutoff (>0.1)</th>
+                          </tr>
+                          <tr>
+                            <td>Uptake</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">Kidney</li>
+                                <li class="list-group-item lipaddingheight">Kidney</li>
+                                <li class="list-group-item lipaddingheight">Kidney</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">OAT1</li>
+                                <li class="list-group-item lipaddingheight">OAT3</li>
+                                <li class="list-group-item lipaddingheight">OCT2</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-6">
+                                  <col class="col-md-2">
+                                </colgroup>
+                                <tr>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{UptakeOAT1Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{UptakeOAT3Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{UptakeOCT2Input}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{UptakeOAT1Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{UptakeOAT3Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{UptakeOCT2Value}}</li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : UptakeOAT1CuttOff >= 0.1, 'setliBGGreen' : UptakeOAT1CuttOff < 0.02, 'setliBGOrange' : ((UptakeOAT1CuttOff >= 0.02) && (UptakeOAT1CuttOff < 0.1))}">
+                                  {{UptakeOAT1CuttOff}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : UptakeOAT3CuttOff >= 0.1, 'setliBGGreen' : UptakeOAT3CuttOff < 0.02, 'setliBGOrange' : ((UptakeOAT3CuttOff >= 0.02) && (UptakeOAT3CuttOff < 0.1))}">
+                                  {{UptakeOAT3CuttOff}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : UptakeOCT2CuttOff >= 0.1, 'setliBGGreen' : UptakeOCT2CuttOff < 0.02, 'setliBGOrange' : ((UptakeOCT2CuttOff >= 0.02) && (UptakeOCT2CuttOff < 0.1))}">
+                                  {{UptakeOCT2CuttOff}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Comment</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{ Comment }}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">URL</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">
+                                  <a href="{{UptakeURL?.Url}}" target="_blank" *ngIf="UptakeURL !== null">
+                                    {{ UptakeURL?.Description }}
+                                  </a>
+                                </li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr class="titleBckgroundTransporter">
+                            <th>Mechanism</th>
+                            <th>Tissue</th>
+                            <th>Transporter</th>
+                            <th>Results</th>
+                            <th>Cutoff (>10)</th>
+                          </tr>
+                          <tr>
+                            <td>Efflux</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">Gut/Liver/Brain</li>
+                                <li class="list-group-item lipaddingheight">Gut/Liver/Brain/Kindney</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">BCRP</li>
+                                <li class="list-group-item lipaddingheight">P-gp</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-6">
+                                  <col class="col-md-2">
+                                </colgroup>
+                                <tr>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{EffluxBCRPInput}}</li>
+                                      <li class="list-group-item lipaddingheight">{{EffluxPgpInput}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{EffluxBCRPValue}}</li>
+                                      <li class="list-group-item lipaddingheight">{{EffluxPgpValue}}</li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : EffluxBCRPCuttOff >= 10, 'setliBGGreen' : EffluxBCRPCuttOff < 10}">
+                                  {{EffluxBCRPCuttOff}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : EffluxPgpCuttOff >= 10, 'setliBGGreen' : EffluxPgpCuttOff < 10}">
+                                  {{EffluxPgpCuttOff}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr class="titleBckgroundTransporter">
+                            <th>Mechanism</th>
+                            <th>Tissue</th>
+                            <th>Transporter</th>
+                            <th>Results</th>
+                            <th>Cutoff (>0.02)</th>
+                          </tr>
+                          <tr>
+                            <td>Efflux</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">Kidney/Liver</li>
+                                <li class="list-group-item lipaddingheight">Kidney</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">MATE1</li>
+                                <li class="list-group-item lipaddingheight">MATE2K</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <table>
+                                <colgroup>
+                                  <col class="col-md-6">
+                                  <col class="col-md-2">
+                                </colgroup>
+                                <tr>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{EffluxMATE1Input}}</li>
+                                      <li class="list-group-item lipaddingheight">{{EffluxMATE2KInput}}</li>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <ul class="list-group">
+                                      <li class="list-group-item lipaddingheight">{{EffluxMATE1Value}}</li>
+                                      <li class="list-group-item lipaddingheight">{{EffluxMATE2KValue}}</li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : EffluxMATE1CuttOff >= 0.02, 'setliBGGreen' : EffluxMATE1CuttOff < 0.02}">
+                                  {{EffluxMATE1CuttOff}}</li>
+                                <li class="list-group-item lipaddingheight"
+                                  [ngClass]="{'setliBGRed' : EffluxMATE2KCuttOff >= 0.02, 'setliBGGreen' : EffluxMATE2KCuttOff < 0.02}">
+                                  {{EffluxMATE2KCuttOff}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">Comment</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{ UptakeComment }}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">URL</td>
+                            <td colspan="4">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">
+                                  <a href="{{EffluxURL?.Url}}" target="_blank" *ngIf="EffluxURL !== null">
+                                    {{ EffluxURL?.Description }}
+                                  </a>
+                              </ul>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-bordered" *ngIf='showTransporterData == true'>
+                        <colgroup>
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-4">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th colspan="5" class="thbackgroundTransporter">Incyte drug as Victim</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr class="titleBckgroundTransporter">
+                            <th>Mechanism</th>
+                            <th>Tissue</th>
+                            <th>Transporter</th>
+                            <th>Is this compound a substrate</th>
+                            <th>Comment</th>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateBCRPOATP1B1 !== 'Not Tested'" -->
+                            <td>Uptake</td>
+                            <td>Liver</td>
+                            <td>OATP1B1</td>
+                            <td>
+                              {{SubstrateBCRPOATP1B1}}
+                            </td>
+                            <td>
+                              {{ComOATP1B1}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateBCRPOATP1B3 !== 'Not Tested'" -->
+                            <td>Uptake</td>
+                            <td>Liver</td>
+                            <td>OATP1B3</td>
+                            <td>
+                              {{SubstrateBCRPOATP1B3}}
+                            </td>
+                            <td>
+                              {{ComOATP1B3}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateOAT1 !== 'Not Tested'" -->
+                            <td>Uptake</td>
+                            <td>Kidney</td>
+                            <td>OAT1</td>
+                            <td>
+                              {{SubstrateOAT1}}
+                            </td>
+                            <td>
+                              {{ComOAT1}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateOAT3 !== 'Not Tested'" -->
+                            <td>Uptake</td>
+                            <td>Kidney</td>
+                            <td>OAT3</td>
+                            <td>
+                              {{SubstrateOAT3}}
+                            </td>
+                            <td>
+                              {{ComOAT3}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateOAT2 !== 'Not Tested'" -->
+                            <td>Uptake</td>
+                            <td>Kidney</td>
+                            <td>OAT2</td>
+                            <td>
+                              {{SubstrateOAT2}}
+                            </td>
+                            <td>
+                              {{ComOAT2}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateMATE1 !== 'Not Tested'" -->
+                            <td>Efflux</td>
+                            <td>Kidney/Liver</td>
+                            <td>MATE1</td>
+                            <td>
+                              {{SubstrateMATE1}}
+                            </td>
+                            <td>
+                              {{ComMATE1}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateMATE2K !== 'Not Tested'" -->
+                            <td>Efflux</td>
+                            <td>Kidney</td>
+                            <td>MATE2K</td>
+                            <td>
+                              {{SubstrateMATE2K}}
+                            </td>
+                            <td>
+                              {{ComMATE2K}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstrateBCRPNew !== 'Not Tested'" -->
+                            <td>Efflux</td>
+                            <td>GUT/Liver/Brai</td>
+                            <td>BCRP</td>
+                            <td>
+                              {{SubstrateBCRPNew}}
+                            </td>
+                            <td>
+                              {{ComBCRP}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <!-- *ngIf="SubstratePGPChnage !== 'Not Tested'" -->
+                            <td>Efflux</td>
+                            <td>GUT/Liver/Brain/kidney</td>
+                            <td>P-gp</td>
+                            <td>
+                              {{SubstratePGPChnage}}
+
+                            </td>
+                            <td>
+                              {{ComPGP}}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>
+                              URL
+                            </td>
+                            <td>
+                              <a href="{{VictimURL?.Url}}" target="_blank" *ngIf="VictimURL !== null">
+                                {{ VictimURL?.Description }}
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="tab-pane fade" id="CYP450Victim">
+                      <div class="alert alert-danger" *ngIf='showCYP450DataVictim == false'>
+                        <strong>Alert!</strong>There is no data related to CYP450 Data Input: Incyte drug as Victim
+                      </div>
+                      <div class="row-fluid" *ngIf='showCYP450DataVictim == true'>
+                        <div class="alert alert-info">
+                          <strong>Modified Date:</strong> {{CYP450DataModified | date }} <br>
+                          <strong>Modified:</strong> {{CYP450DataEditor.Title}}
+                        </div>
+                        <div class="row">&nbsp;</div>
+                      </div>
+                      <table class="table table-bordered margin-bottom" *ngIf='showCYP450DataVictim == true'>
+                        <colgroup>
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-2">
+                          <col class="col-md-4">
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th colspan="5" class="thbackground">CYP450 Data Input: Incyte drug as Victim</th>
+                          </tr>
+                          <tr class="titleBckground">
+                            <th>Assay</th>
+                            <th>Enzyme</th>
+                            <th>Substrate</th>
+                            <th>TNR%</th>
+                            <th>Comment</th>
+                          </tr>
+                          <!-- <tr>
+                            <td colspan="6">
+                              <div class="alert alert-info">
+                                <strong>Modified Date:</strong> {{CYP450DataModified | date }} <br>
+                                <strong>Modified:</strong> {{CYP450DataEditor.Title}}
+                              </div>
+                            </td>
+                          </tr> -->
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Reaction Phenotyping (Human Recombinant CYPs)</td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">1A2</li>
+                                <li class="list-group-item lipaddingheight">2B6</li>
+                                <li class="list-group-item lipaddingheight">2C8</li>
+                                <li class="list-group-item lipaddingheight">2C9</li>
+                                <li class="list-group-item lipaddingheight">2C19</li>
+                                <li class="list-group-item lipaddingheight">2D6</li>
+                                <li class="list-group-item lipaddingheight">3A4</li>
+                                <li class="list-group-item lipaddingheight">3A5</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{Substrate1A2}}</li>
+                                <li class="list-group-item lipaddingheight">{{Substrate2B6}}</li>
+                                <li class="list-group-item lipaddingheight">{{Substrate2C8}}</li>
+                                <li class="list-group-item lipaddingheight">{{Substrate2C9}}</li>
+                                <li class="list-group-item lipaddingheight">{{Substrate2C19}}</li>
+                                <li class="list-group-item lipaddingheight">{{Substrate2D6}}</li>
+                                <li class="list-group-item lipaddingheight">{{Substrate3A4}}</li>
+                                <li class="list-group-item lipaddingheight">{{Substrate3A5}}</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{TNR1A2}}</li>
+                                <li class="list-group-item lipaddingheight">{{TNR2B6}}</li>
+                                <li class="list-group-item lipaddingheight">{{TNR2C8}}</li>
+                                <li class="list-group-item lipaddingheight">{{TNR2C9}}</li>
+                                <li class="list-group-item lipaddingheight">{{TNR2C19}}</li>
+                                <li class="list-group-item lipaddingheight">{{TNR2D6}}</li>
+                                <li class="list-group-item lipaddingheight">{{TNR3A4}}</li>
+                                <li class="list-group-item lipaddingheight">{{TNR3A5}}</li>
+                              </ul>
+                            </td>
+                            <td>
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{Comment1A2}}</li>
+                                <li class="list-group-item lipaddingheight">{{Comment2B6}}</li>
+                                <li class="list-group-item lipaddingheight">{{Comment2C8}}</li>
+                                <li class="list-group-item lipaddingheight">{{Comment2C9}}</li>
+                                <li class="list-group-item lipaddingheight">{{Comment2C19}}</li>
+                                <li class="list-group-item lipaddingheight">{{Comment2D6}}</li>
+                                <li class="list-group-item lipaddingheight">{{Comment3A4}}</li>
+                                <li class="list-group-item lipaddingheight">{{Comment3A5}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+
+                          <tr>
+                            <td colspan="1">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">Range</li>
+                              </ul>
+                            </td>
+                            <td colspan="2">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">Most likely no</li>
+                                <li class="list-group-item lipaddingheight">Minimal, if at all</li>
+                                <li class="list-group-item lipaddingheight">Most likely yes</li>
+                                <li class="list-group-item lipaddingheight">Yes</li>
+                              </ul>
+                            </td>
+                            <td colspan="2">
+                              <ul class="list-group">
+                                <li class="list-group-item lipaddingheight">{{ParentRemain95}}</li>
+                                <li class="list-group-item lipaddingheight">{{ParentRemain85}}</li>
+                                <li class="list-group-item lipaddingheight">{{ParentRemain8520}}</li>
+                                <li class="list-group-item lipaddingheight">{{ParentRemain20}}</li>
+                              </ul>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>URL</td>
+                            <td colspan="6">
+                              <a href="{{CYP450VictimURL}}" target="_blank" *ngIf="CYP450VictimURL !== null">
+                                Click Here
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Add Pop up for -->
+<div class="modal fade" id="info" role="dialog">
+  <app-color-coding></app-color-coding>
+</div>
+
+<!-- <div class="row">
+  <ul class="list-group">
+    <li class="list-group-item lipaddingheight"
+      [ngClass]="{'redCalss' : valtest >= 1.1, 'greenClass' : valtest < 1.04, 'orangeClass' : ((valtest >= 1.04) && (valtest < 1.1))}">
+      Ratna</li>
+    <li class="list-group-item lipaddingheight"
+      [ngClass]="{'redCalss' : valtestA >= 1.1, 'greenClass' : valtestA < 1.04, 'orangeClass' : ((valtestA >= 1.04) && (valtestA < 1.1))}">
+      Kumar</li>
+    <li class="list-group-item lipaddingheight"
+      [ngClass]="{'redCalss' : valtestB >= 1.1, 'greenClass' : valtestB < 1.04, 'orangeClass' : ((valtestB >= 1.04) && (valtestB < 1.1))}">
+      Paleru</li>
+  </ul>
+</div> -->

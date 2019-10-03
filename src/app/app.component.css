@@ -1,0 +1,13 @@
+a.infomdl {
+  float: right;
+  color: white;
+  cursor: pointer;
+}
+
+a.infomdl i.fa {
+  font-size: 18px;
+}
+
+.alert {
+  margin-bottom: 0 !important;
+}

@@ -1,0 +1,536 @@
+<div class="modal-dialog modal-lg">
+  <!-- Main Modal content-->
+  <div class="modal-content">
+    <div class="modal-body">
+      <div class="popupPadding">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h6 class="panel-title">Color Coding Information</h6>
+          </div>
+          <div class="panel-body">
+            <form #form="ngForm" class="form-horizontal" role="form">
+              <div class="form-group row">
+                <div class="container">
+                  <table class="table table-bordered">
+                    <colgroup>
+                      <col class="col-md-2">
+                      <col class="col-md-3">
+                      <col class="col-md-1">
+                      <col class="col-md-3">
+                      <col class="col-md-3">
+                    </colgroup>
+                    <thead class="tblHead">
+                      <tr>
+                        <td colspan="5">
+                          <h3 style="font-weight: 500!important">
+                            Overview of Equations and Cutoff Values from Regulatory Agencies
+                          </h3>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <h5>
+                            Perpetrator Potential
+                          </h5>
+                        </td>
+                        <td>
+                          <h5>
+                            Guidance
+                          </h5>
+                        </td>
+                        <td>
+                          <h5>
+                            [I]
+                          </h5>
+                        </td>
+                        <td>
+                          <h5>
+                            Equation
+                          </h5>
+                        </td>
+                        <td>
+                          <h5>
+                            Result/Implication
+                          </h5>
+                        </td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="childTD">CYP450 Reversible Inhibition "R1" </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                2012 FDA
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                2017 FDA and PMDA and 2013 EMA
+                              </td>
+                            </tr>
+                            <tr class="tblbottomTr">
+                              <td class="tbltd">
+                                2012 and 2017 FDA, 2017 PMDA ad 2013 EMA
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                Total
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                Unbound
+                              </td>
+                            </tr>
+                            <tr class="tblbottomTr">
+                              <td class="tbltd">
+                                Gut
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                1 + (Imax / Ki)
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                1 + (Imax,u / Ki,u)
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                1 + (Igut / Ki) <br>
+                                Igut = dose of inhibitor/250mL
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 1.1
+                              </td>
+                              <td class="tbltd redTD">
+                                {{gtsymbol}} 1.1
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 1.02
+                              </td>
+                              <td class="tbltd redTD">
+                                {{gesymbol}} 1.02
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 11
+                              </td>
+                              <td class="tbltd redTD">
+                                {{gesymbol}} 11
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="childTD">CYP450 Time-Dependent Inhibition "R2"</td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                2012 FDA
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                2013 EMA
+                              </td>
+                            </tr>
+                            <tr class="tblbottomTr">
+                              <td class="tbltd">
+                                2017 FDA and PMDA
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                Total
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                Total
+                              </td>
+                            </tr>
+                            <tr class="tblbottomTr">
+                              <td class="tbltd">
+                                Unbound
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                (kobs + kdeg)/kdeg <br>
+                                kobs = (kinact x Imax)/(Ki + Imax)
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                (kobs + kdeg)/kdeg <br>
+                                kobs = (kinact x Imax,u)/(Ki + Imax,u)
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                (kobs + kdeg)/kdeg <br>
+                                kobs = (kinact x 50 x Imax,u)/(Ki + 50 x Imax,u)
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 1.1
+                              </td>
+                              <td class="tbltd redTD">
+                                {{gtsymbol}} 1.1
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 1.25
+                              </td>
+                              <td class="tbltd redTD">
+                                {{gesymbol}} 1.25
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 1.25
+                              </td>
+                              <td class="tbltd redTD">
+                                {{gesymbol}} 1.25
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="childTD">CYP450 Induction "R3"</td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                2012 FDA
+                              </td>
+                            </tr>
+                            <tr class="tblbottomTr">
+                              <td class="tbltd">
+                                2017 FDA and PMDA
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                Total
+                              </td>
+                            </tr>
+                            <tr class="tblbottomTr">
+                              <td class="tbltd">
+                                Unbound
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd">
+                                1/[1 + (d x Emax x Imax)/(EC50 + Imax)]
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                1/[1 + (d x Emax x 10 x Imax,u)/(EC50 + (10 x Imax,u))] <br>
+                                Scaling factor assumed for basic model: d = 1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{gtsymbol}} 0.9
+                              </td>
+                              <td class="tbltd redTD">
+                                {{lssymbol}} 0.9
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{gtsymbol}} 0.8
+                              </td>
+                              <td class="tbltd redTD">
+                                {{lssymbol}} 0.8
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="childTD">P-gp and BCRP Inhibition</td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                2017 FDA and PMDA and 2013 EMA
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                Gut
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                Igut / IC50 <br>
+                                Igut = dose of inhibitor/250mL
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr class="tblTopTr">
+                              <td class="tbltd greenTD">
+                                {{gtsymbol}} 10
+                              </td>
+                              <td class="tbltd redTD">
+                                {{lesymbol}} 10
+                              </td>
+                              <td class="tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="childTD">OATP1B1 and OATP1B3 Inhibition</td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                2017 FDA and 2013 EMA
+                                (No RB in PMDA eqn)
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                Unbound
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                1 + ((fu,p x Iin,max) / IC50) <br>
+                                Iin,max = Imax + (FaFg x Ka x dose) / Qh) / RB / mw
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 1.04
+                              </td>
+                              <td class="tbltd yellowTD">
+                                1.04 - 1.1
+                              </td>
+                              <td class="redTD">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="childTD">OCT2, OAT1 and OAT3 Inhibition</td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                2017 FDA and PMDA and 2013 EMA
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                Unbound
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                Imax,u / IC50
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 0.02
+                              </td>
+                              <td class="tbltd yellowTD">
+                                0.02 - 0.1
+                              </td>
+                              <td class="redTD">
+                                {{gesymbol}} 0.1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="childTD">MATE1 and MATE2K Inhibition</td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                2017 FDA and PMDA and 2013 EMA
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                Unbound
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd">
+                                Imax,u / IC50
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="childTD">
+                          <table class="childTbl">
+                            <tr>
+                              <td class="tbltd greenTD">
+                                {{lssymbol}} 0.02
+                              </td>
+                              <td class="redTD">
+                                {{gesymbol}} 0.02
+                              </td>
+                              <td class="tbltd tbempty">
+                                {{gesymbol}} 1.1
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="redTD" colspan="2">
+                          Above Cutoff
+                        </td>
+                        <td class="yellowTD" colspan="2">
+                          Above EMA but Below FDA Cutoff
+                        </td>
+                        <td class="greenTD" colspan="2">
+                          Below Cutoff
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="form-group container divpadding">
+                <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

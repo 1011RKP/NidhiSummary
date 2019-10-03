@@ -1,0 +1,89 @@
+.popupPadding {
+  padding: 15px;
+}
+
+.tblHead {
+  background: #337ab7;
+  color: white;
+  text-align: center;
+}
+
+.tblTopTr {
+  border-bottom: 1px solid #dddddd !important;
+}
+
+.tbltd {
+  padding: 5px;
+}
+
+.childTbl {
+  width: 100%;
+  padding: 5px;
+}
+
+.childTD {
+  padding: 0 !important;
+  vertical-align: middle;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  align: center;
+}
+
+.childTbl {
+  padding: 0 !important;
+  vertical-align: middle;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.redTD {
+  background: #dc3545 !important;
+  color: white;
+  vertical-align: middle;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  align: center;
+}
+
+.greenTD {
+  background: #28a745 !important;
+  color: white;
+  vertical-align: middle;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  align: center;
+}
+
+.yellowTD {
+  background: #ffc107 !important;
+  color: white;
+  vertical-align: middle;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  align: center;
+}
+
+.tbempty {
+  border-bottom: 2px solid white !important;
+  color: white;
+}
+
+.topTD {
+  border-bottom: 1px solid #ffffff;
+}
+
+.secoundTD {
+  border-bottom: 1px solid #ffffff;
+}
+
+.childTbl {
+  vertical-align: middle;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
